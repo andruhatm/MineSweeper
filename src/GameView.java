@@ -63,6 +63,7 @@ public class GameView {
     private final Mouse mouse;
     private final Keyboard keyboard;
     private final Sound sound;
+    private final SwingAdapter swingAdapter;
 
     // Farbpalette
     //Color palette
@@ -83,9 +84,9 @@ public class GameView {
      * </code>
      * </pre>
      */
-    public GameView() {
-        this(WINDOWSIZE_SMALL);
-    }
+//    public GameView() {
+//        this(WINDOWSIZE_SMALL);
+//    }
 
     /**
      * Es wird eine Leinwand mit einer 16:9 Auflösung von 960 * 540 Pixeln erzeugt (Breite = 960 Pixel, Höhe = 540
@@ -113,10 +114,23 @@ public class GameView {
      *
      * @param windowsize Die gewählte Fenstergröße.
      */
-    public GameView(int windowsize) {
+//    public GameView(int windowsize) {
+//        // Klassen
+//        this.window = new Window(swingAdapter);
+//        this.mouse = new Mouse(swingAdapter);
+//        this.keyboard = new Keyboard(swingAdapter);
+//        this.sound = new Sound();
+//        this.canvas = new Canvas(colormap);
+//        swingAdapter.registerListeners(mouse, keyboard, sound);
+//
+//        // Farbpalette
+//        initColormap();
+//    }
+
+    public GameView(int windowsize,JPanel minesBoard) {
 
         // Klassen
-        SwingAdapter swingAdapter = new SwingAdapter(windowsize);
+        this.swingAdapter = new SwingAdapter(windowsize,minesBoard);
         this.window = new Window(swingAdapter);
         this.mouse = new Mouse(swingAdapter);
         this.keyboard = new Keyboard(swingAdapter);
@@ -424,6 +438,10 @@ public class GameView {
      */
     public void printCanvas() {
         window.printCanvas(canvas);
+    }
+
+    public void addMouseListener(GameLogics.MinesAdapter l){
+        swingAdapter.getFrame().setListener(l);
     }
 
     /**
@@ -883,9 +901,13 @@ public class GameView {
 
         private Mouse mouse;
         private Keyboard keyboard;
-
         private final JPanel statusBar;
         private JLabel statusLabelLinks;
+        private GameLogics.MinesAdapter listener;
+
+        public void setListener(GameLogics.MinesAdapter adapter) {
+            this.listener = adapter;
+        }
 
         void registerListeners(Mouse mouse, Keyboard keyboard) {
             // Klassen
@@ -893,7 +915,7 @@ public class GameView {
             this.keyboard = keyboard;
         }
 
-        Frame(int windowSize, TextPanel textPanel) {
+        Frame(int windowSize, TextPanel textPanel, JPanel minesBoard) {
 
             statusBar = new JPanel() {
                 {
@@ -915,30 +937,144 @@ public class GameView {
                 }
             };
 
-            // Struktur
-            textPanel.setPreferredSize(new Dimension(GameView.WIDTH, GameView.HEIGHT));
+            //this.minesBoard = minesBoard;
 
-            //            Box box = new Box(BoxLayout.Y_AXIS);
-            //            box.setAlignmentX(JComponent.CENTER_ALIGNMENT);
-            //            box.add(Box.createVerticalGlue());
-            //            box.add(textPanel);
-            //            box.add(Box.createVerticalGlue());
+//            minesBoard = new JPanel(){
+//                {
+//                    setLayout(new BorderLayout());
+//                    setBorder(BorderFactory.createRaisedBevelBorder());
+//                    //setBackground(Color.GRAY);
+//                }
+//            };
 
             JPanel textPanelAndStatusBar = new JPanel(new BorderLayout(5, 5));
             textPanelAndStatusBar.setBackground(Color.BLACK);
-            textPanelAndStatusBar.add(new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0)), BorderLayout.NORTH);
+
+            //textPanelAndStatusBar.add(new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0)), BorderLayout.NORTH);
             textPanelAndStatusBar.add(new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0)), BorderLayout.EAST);
             textPanelAndStatusBar.add(new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0)), BorderLayout.WEST);
-            textPanelAndStatusBar.add(textPanel, BorderLayout.CENTER);
+            textPanelAndStatusBar.add(minesBoard,BorderLayout.CENTER);
+            textPanelAndStatusBar.add(textPanel, BorderLayout.NORTH);
+            textPanelAndStatusBar.add(statusBar, BorderLayout.SOUTH);
+            add(textPanelAndStatusBar);
+            addMouseListener(listener);
+            // Eigenschaften
+            setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+            setTitle(Version.getStandardtitle());
+            //textPanel.requestFocus();
+            setResizable(true);
+
+            // Listeners
+            addKeyListener(new KeyListener() {
+
+                @Override
+                public void keyTyped(KeyEvent keyEvent) {
+                    all(keyEvent);
+                }
+
+                @Override
+                public void keyReleased(KeyEvent keyEvent) {
+                    all(keyEvent);
+                }
+
+                @Override
+                public void keyPressed(KeyEvent keyEvent) {
+                    all(keyEvent);
+                }
+
+                private void all(KeyEvent keyEvent) {
+                    if (keyboard != null) {
+                        keyboard.update(keyEvent);
+                    }
+                }
+            });
+//            MouseAdapter mouseAdapter = new MouseAdapter() {
+//                @Override
+//                public void mouseReleased(MouseEvent mouseEvent) {
+//                    all(mouseEvent);
+//                }
+//
+//                @Override
+//                public void mousePressed(MouseEvent mouseEvent) {
+//                    all(mouseEvent);
+//                }
+//
+//                @Override
+//                public void mouseMoved(MouseEvent mouseEvent) {
+//                    all(mouseEvent);
+//                }
+//
+//                @Override
+//                public void mouseClicked(MouseEvent mouseEvent) {
+//                    all(mouseEvent);
+//                }
+//
+//                private void all(MouseEvent mouseEvent) {
+//                    if (mouse != null) {
+//                        mouse.update(mouseEvent);
+//                    }
+//                }
+//            };
+
+            minesBoard.addMouseListener(listener);
+            System.out.println("listener added");
+
+//            textPanel.addMouseMotionListener(mouseAdapter);
+//            textPanel.addMouseListener(mouseAdapter);
+
+            // Größe des Fensters
+            pack();
+            setMinimumSize(getSize());
+            if (windowSize == GameView.WINDOWSIZE_MAXIMIZED) {
+                setExtendedState(JFrame.MAXIMIZED_BOTH);
+            } else if (windowSize == GameView.WINDOWSIZE_LARGE) {
+                int screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
+                int screenHeight = Toolkit.getDefaultToolkit().getScreenSize().height;
+                double scaleX = screenWidth * 4d / 5 / GameView.WIDTH;
+                double scaleY = screenHeight * 4d / 5 / GameView.HEIGHT;
+                double scale = Math.min(scaleX, scaleY);
+                setSize(new Dimension((int) (GameView.WIDTH * scale), (int) (GameView.HEIGHT * scale)));
+            }
+            // Location und Ausgeben
+            setLocationRelativeTo(null);
+            setVisible(true);
+        }
+
+        Frame(int windowSize,JPanel minesBoard) {
+
+            statusBar = new JPanel() {
+                {
+                    setLayout(new BorderLayout());
+                    setBorder(BorderFactory.createRaisedBevelBorder());
+                    setBackground(Color.WHITE);
+                    setForeground(Color.BLACK);
+                    statusLabelLinks = new JLabel();
+                    statusLabelLinks.setBackground(Color.WHITE);
+                    statusLabelLinks.setForeground(Color.BLACK);
+                    statusLabelLinks.setHorizontalAlignment(JLabel.LEFT);
+
+                    JLabel statusLabelRechts = new JLabel(Version.getStatusSignature());
+                    statusLabelRechts.setBackground(Color.WHITE);
+                    statusLabelRechts.setForeground(Color.BLACK);
+                    statusLabelRechts.setHorizontalAlignment(JLabel.RIGHT);
+                    add(statusLabelLinks, BorderLayout.WEST);
+                    add(statusLabelRechts, BorderLayout.EAST);
+                }
+            };
+            //this.minesBoard = minesBoard;
+
+            JPanel textPanelAndStatusBar = new JPanel(new BorderLayout(5, 5));
+            textPanelAndStatusBar.setBackground(Color.BLACK);
+            textPanelAndStatusBar.add(minesBoard,BorderLayout.CENTER);
+            textPanelAndStatusBar.add(new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0)), BorderLayout.EAST);
+            textPanelAndStatusBar.add(new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0)), BorderLayout.WEST);
             textPanelAndStatusBar.add(statusBar, BorderLayout.SOUTH);
             add(textPanelAndStatusBar);
 
             // Eigenschaften
             setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
             setTitle(Version.getStandardtitle());
-            textPanel.requestFocus();
             setResizable(true);
-
 
             // Listeners
             addKeyListener(new KeyListener() {
@@ -991,8 +1127,6 @@ public class GameView {
                     }
                 }
             };
-            textPanel.addMouseMotionListener(mouseAdapter);
-            textPanel.addMouseListener(mouseAdapter);
 
             // Größe des Fensters
             pack();
@@ -1227,11 +1361,19 @@ public class GameView {
         private final Frame frame;
         private Sound sound;
         private Mouse mouse;
+        private GameLogics.MinesAdapter listener;
         private Font font;
         FontMetrics metric;
         BufferedImage bufferedImage;
         Graphics2D g2D;
 
+        public Frame getFrame() {
+            return frame;
+        }
+
+        public void setListener(GameLogics.MinesAdapter adapter){
+            this.listener = adapter;
+        }
 
         void registerListeners(Mouse mouse, Keyboard keyboard, Sound sound) {
             frame.registerListeners(mouse, keyboard);
@@ -1239,9 +1381,24 @@ public class GameView {
             this.mouse = mouse;
         }
 
-        SwingAdapter(int windowSize) {
+//        SwingAdapter(int windowSize) {
+//            this.textPanel = new TextPanel();
+//            this.frame = new Frame(windowSize); //// getting Jframe
+//            this.bufferedImage = new BufferedImage(GameView.WIDTH, GameView.HEIGHT, BufferedImage.TYPE_INT_RGB);
+//            this.g2D = bufferedImage.createGraphics();
+//            Map<TextAttribute, Object> fontMap = new HashMap<>();
+//            fontMap.put(TextAttribute.FAMILY, "Monospaced");
+//            fontMap.put(TextAttribute.WEIGHT, TextAttribute.WEIGHT_BOLD);
+//            //fontMap.put(TextAttribute.WIDTH, TextAttribute.WIDTH_SEMI_EXTENDED);
+//            this.font = new Font(fontMap);
+//            this.metric = bufferedImage.getGraphics().getFontMetrics(font);
+//        }
+
+        SwingAdapter(int windowSize,JPanel minesBoard) {
             this.textPanel = new TextPanel();
-            this.frame = new Frame(windowSize, textPanel);
+            this.frame = new Frame(windowSize,textPanel,minesBoard); //// getting Jframe
+            //this.frame = new Frame(windowSize,minesBoard);
+
             this.bufferedImage = new BufferedImage(GameView.WIDTH, GameView.HEIGHT, BufferedImage.TYPE_INT_RGB);
             this.g2D = bufferedImage.createGraphics();
             Map<TextAttribute, Object> fontMap = new HashMap<>();
