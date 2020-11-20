@@ -4,17 +4,32 @@ package src;
  * Entity class of Cell on the Board
  */
 public class Cell {
+
+    private static int absoluteX;
+    private static int absoluteY;
+
     private boolean mine;
     private boolean mark;
     private boolean cover;
     private boolean checked;
 
+    private TilesEnum type;
+
     private int value;
 
-    public Cell() {
+    public Cell(int absoluteX,int absoluteY) {
+        Cell.absoluteX = absoluteX;
+        Cell.absoluteY = absoluteY;
         this.cover = true;
         this.mark  = false;
         this.mine  = false;
+        this.value = 0;
+    }
+
+    public Cell() {
+        this.mine = true;
+        this.mark = false;
+        this.cover = false;
         this.value = 0;
     }
 
@@ -72,5 +87,16 @@ public class Cell {
 
     public int getAroundMines() {
         return this.value;
+    }
+
+    @Override
+    public String toString() {
+        return "Cell{" +
+                "mine=" + mine +
+                ", mark=" + mark +
+                ", cover=" + cover +
+                ", checked=" + checked +
+                ", value=" + value +
+                '}';
     }
 }

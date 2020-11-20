@@ -43,7 +43,6 @@ public class GameView {
     }
 
     //Fenstergrößen für den Konstruktor.
-    //Window sizes for the constructor.
     /** Ein kleines Fenster. */
     public static final int WINDOWSIZE_SMALL = 1;
     /** Ein großes Fenster. */
