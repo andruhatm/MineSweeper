@@ -3,6 +3,7 @@ package src;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 public class GameLogics {
 
@@ -159,7 +160,15 @@ public class GameLogics {
 			inGame = false;
 			view.setStatusText("Game Won");
 		} else if (!inGame) {
-			view.setStatusText("Game Lost");
+			view.setStatusText("Game Lost. Window will close in 5 seconds");
+			view.printCanvas();
+			view.useMouse(false);
+			try {
+				TimeUnit.SECONDS.sleep(5);
+			}catch (InterruptedException e){
+				e.getCause();
+			}
+			view.closeGameView(true);
 		}
 		view.printCanvas();
 	}
