@@ -49,6 +49,8 @@ public class Main {
 
 		//runs mouse click listener thread
 		thread.start();
+
+		//TODO звуковые эффекты и меню
 	}
 
 }

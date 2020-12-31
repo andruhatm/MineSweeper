@@ -15,13 +15,13 @@ public class GameLogics {
 	private static int absoluteX;
 	private static int absoluteY;
 
-	private final int totalMines = 30;
 	private int remainderMines;
 
 	private final int rows = 16;
 	private final int columns = 16;
 
 	private static Cell[][] cells;
+	private int uncoveredCells = 0;
 
 	private boolean inGame;
 
@@ -36,11 +36,11 @@ public class GameLogics {
 	 * initializes game board
 	 */
 	public void newGame() {
-		System.out.println("new game");
 		Random random = new Random();
 
 		this.inGame = true;
-		this.remainderMines = totalMines;
+		int totalMines = 9;
+		this.remainderMines = totalMines+1;
 
 		view.setStatusText("Mines lasts: " + remainderMines);
 
@@ -76,8 +76,10 @@ public class GameLogics {
 			drawBoard();
 		}
 
-		if ((pressedCol < 0 || pressedCol >= columns)
-						|| (pressedRow < 0 || pressedRow >= rows)) {
+		if ((pressedCol < 0
+				|| pressedCol >= columns)
+				|| (pressedRow < 0 || pressedRow >= rows)
+		){
 			return;
 		}
 
@@ -92,10 +94,12 @@ public class GameLogics {
 
 			if (!pressedCell.isMarked()) {
 				pressedCell.setMark(true);
-				remainderMines--;
+				this.uncoveredCells--;
+				this.remainderMines--;
 			} else {
 				pressedCell.setMark(false);
-				remainderMines++;
+				this.uncoveredCells++;
+				this.remainderMines++;
 			}
 
 			view.setStatusText(Integer.toString(remainderMines));
@@ -112,6 +116,7 @@ public class GameLogics {
 				inGame = false;
 			} else if (pressedCell.isEmpty()) {
 				findEmptyCells(pressedRow, pressedCol, 0);
+				//TODO bugfix not open tiles
 			}
 		}
 
@@ -126,7 +131,7 @@ public class GameLogics {
 	 */
 	public void drawBoard(){
 
-		int coveredCells = 0;
+		int coveredCells = uncoveredCells;
 
 		//adding border for game board with tiles
 		view.addRectangleToCanvas(200,20,517,517,5,false,Color.white);
@@ -156,13 +161,23 @@ public class GameLogics {
 				this.view.addImageToCanvas(imageType.getTitle(),xPosition+absoluteX,yPosition+absoluteY,1);
 			}
 		}
+		System.out.println(coveredCells);
 		if (coveredCells == 0 && inGame) {
 			inGame = false;
-			view.setStatusText("Game Won");
+			view.useMouse(false);
+			view.setStatusText("Game Won. Window will close in 5 seconds");
+			view.playSound("win.wav",false);
+			try {
+				TimeUnit.SECONDS.sleep(5);
+			}catch (InterruptedException e){
+				e.getCause();
+			}
+			view.closeGameView(true);
 		} else if (!inGame) {
+			view.playSound("lose.wav",false);
+			view.useMouse(false);
 			view.setStatusText("Game Lost. Window will close in 5 seconds");
 			view.printCanvas();
-			view.useMouse(false);
 			try {
 				TimeUnit.SECONDS.sleep(5);
 			}catch (InterruptedException e){
