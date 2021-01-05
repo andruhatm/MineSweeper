@@ -10,7 +10,9 @@ import java.util.concurrent.TimeUnit;
 
 public class BoardLogic {
 
-	GameView view;
+	private final GameView view;
+
+	private GameMenu menu;
 
 	//cell pixel size
 	private static final int CELL_SIZE = 32;
@@ -22,16 +24,18 @@ public class BoardLogic {
 
 	private final int rows = 16;
 	private final int columns = 16;
+	private final int minesCount;
 
 	private static Cell[][] cells;
 	private int uncoveredCells = 0;
 
 	private boolean inGame;
 
-	public BoardLogic(int absoluteX, int absoluteY, GameView view) {
+	public BoardLogic(int absoluteX, int absoluteY, GameView view, int minesCount) {
 		this.view = view;
 		BoardLogic.absoluteX = absoluteX;
 		BoardLogic.absoluteY = absoluteY;
+		this.minesCount = minesCount;
 		initCells();
 	}
 
@@ -42,7 +46,7 @@ public class BoardLogic {
 		Random random = new Random();
 
 		this.inGame = true;
-		int totalMines = 19;
+		int totalMines = minesCount;
 		this.remainderMines = totalMines+1;
 
 		view.setStatusText("Mines lasts: " + remainderMines);
@@ -167,10 +171,11 @@ public class BoardLogic {
 
 			}
 		}
-		System.out.println(coveredCells);
+
 		if (coveredCells == 0 && inGame) {
+			menu = new GameMenu(this.view);
+			GameBoard.thread.disable();
 			inGame = false;
-			view.useMouse(false);
 			view.setStatusText("Game Won. Window will close in 5 seconds");
 			view.playSound("win.wav",false);
 			try {
@@ -178,10 +183,11 @@ public class BoardLogic {
 			}catch (InterruptedException e){
 				e.getCause();
 			}
-			view.closeGameView(true);
+			menu.openMenu();
 		} else if (!inGame) {
+			menu = new GameMenu(this.view);
+			GameBoard.thread.disable();
 			view.playSound("lose.wav",false);
-			view.useMouse(false);
 			view.setStatusText("Game Lost. Window will close in 5 seconds");
 			view.printCanvas();
 			try {
@@ -189,7 +195,7 @@ public class BoardLogic {
 			}catch (InterruptedException e){
 				e.getCause();
 			}
-			view.closeGameView(true);
+			menu.openMenu();
 		}
 		view.printCanvas();
 	}

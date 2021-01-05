@@ -2,18 +2,15 @@ package src;
 
 import java.awt.event.MouseEvent;
 
-/**
- * Thread for checking new mouse click events
- */
-public class BoardMouseEventThread extends Thread{
+public class MenuMouseEventThread extends Thread{
 
 	private final GameView view;
-	private final BoardLogic logics;
+	private final MenuLogic logics;
 	private MouseEvent lastEvent = null;
 	private MouseEvent currentEvent = null;
 	private boolean active = true;
 
-	BoardMouseEventThread(String name, GameView view, BoardLogic logics){
+	MenuMouseEventThread(String name, GameView view, MenuLogic logics){
 		super(name);
 		this.view = view;
 		this.logics = logics;
@@ -24,23 +21,24 @@ public class BoardMouseEventThread extends Thread{
 	 */
 	@Override
 	public void run() {
-		System.out.println("board thread started");
 		while (active) {
 
 			for(MouseEvent event: view.pollMouseEvents()){
-				if(event.getID()==MouseEvent.MOUSE_CLICKED){
+				if(event.getID() == MouseEvent.MOUSE_CLICKED){
 					lastEvent = event;
 				}
 			}
+
 			if(lastEvent != null)
 				if(lastEvent != currentEvent){
-					//System.out.println("X: " + lastEvent.getX() + " Y: " + lastEvent.getY());
-					this.logics.blockPressed(lastEvent);
+					this.logics.menuClick(lastEvent);
+					System.out.println("menuClick mthd");
 				}
 
 			currentEvent = lastEvent;
 
-			System.out.println("working...");
+			System.out.println("menu thread is working...");
+
 			try {
 				Thread.sleep(50);
 			}
@@ -51,9 +49,10 @@ public class BoardMouseEventThread extends Thread{
 	}
 
 	public void disable(){
-		System.out.println("board thread disabled");
+		System.out.println("menu thread disabled");
 		currentThread().interrupt();
 		setActive(false);
+//		view.printCanvas();
 	}
 
 	private boolean isActive() {
