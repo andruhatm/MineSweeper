@@ -1,11 +1,14 @@
 package src;
 
+import src.common.TilesEnum;
+import src.entity.Cell;
+
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-public class GameLogics {
+public class BoardLogic {
 
 	GameView view;
 
@@ -25,10 +28,10 @@ public class GameLogics {
 
 	private boolean inGame;
 
-	public GameLogics(int absoluteX,int absoluteY,GameView view) {
+	public BoardLogic(int absoluteX, int absoluteY, GameView view) {
 		this.view = view;
-		GameLogics.absoluteX = absoluteX;
-		GameLogics.absoluteY = absoluteY;
+		BoardLogic.absoluteX = absoluteX;
+		BoardLogic.absoluteY = absoluteY;
 		initCells();
 	}
 
@@ -39,7 +42,7 @@ public class GameLogics {
 		Random random = new Random();
 
 		this.inGame = true;
-		int totalMines = 9;
+		int totalMines = 19;
 		this.remainderMines = totalMines+1;
 
 		view.setStatusText("Mines lasts: " + remainderMines);
@@ -60,7 +63,7 @@ public class GameLogics {
 
 	/**
 	 * calculate's pressed cell and changes cells state, then call to repaint
-	 * @param e last mouse click event from {@link MouseEventsThread}
+	 * @param e last mouse click event from {@link BoardMouseEventThread}
 	 */
 	public void blockPressed(MouseEvent e){
 
@@ -68,7 +71,6 @@ public class GameLogics {
 		int pressedRow = (e.getY() - absoluteY) / CELL_SIZE;
 		System.out.println("pressed column "+pressedCol+" pressed row "+pressedRow);
 
-		boolean doRepaint = false;
 		Cell pressedCell;
 
 		if (!inGame) {
@@ -85,8 +87,9 @@ public class GameLogics {
 
 		pressedCell = cells[pressedRow][pressedCol];
 
+		System.out.println(pressedCell.toString());
+
 		if (e.getButton() == MouseEvent.BUTTON3) {
-			doRepaint = true;
 
 			if (!pressedCell.isCovered()) {
 				return;
@@ -94,6 +97,7 @@ public class GameLogics {
 
 			if (!pressedCell.isMarked()) {
 				pressedCell.setMark(true);
+				System.out.println(pressedCell.toString());
 				this.uncoveredCells--;
 				this.remainderMines--;
 			} else {
@@ -103,26 +107,27 @@ public class GameLogics {
 			}
 
 			view.setStatusText(Integer.toString(remainderMines));
+			view.playSound("flag.wav",false);
+
 		} else {
+
 			if (pressedCell.isMarked() || !pressedCell.isCovered()) {
 				return;
 			}
 
-			doRepaint = true;
-
 			pressedCell.uncover();
 
 			if (pressedCell.isMine()) {
+				view.playSound("boom.wav",false);
 				inGame = false;
 			} else if (pressedCell.isEmpty()) {
-				findEmptyCells(pressedRow, pressedCol, 0);
+				findEmptyCells(pressedRow, pressedCol, 32);
 				//TODO bugfix not open tiles
 			}
+			if(!pressedCell.isMine())
+				view.playSound("shovel.wav",false);
 		}
-
-		if (doRepaint) {
-			drawBoard();
-		}
+		drawBoard();
 	}
 
 	/**
@@ -147,18 +152,19 @@ public class GameLogics {
 					coveredCells++;
 				}
 
-				if (inGame) {
-					if (tile.isMine() && !tile.isCovered()) {
-						inGame = false;
-					}
-				}
-
 				imageType = this.decideImageType(tile);
 
 				xPosition = (j * CELL_SIZE);
 				yPosition = (i * CELL_SIZE);
 
 				this.view.addImageToCanvas(imageType.getTitle(),xPosition+absoluteX,yPosition+absoluteY,1);
+
+				if (inGame) {
+					if (tile.isMine() && !tile.isCovered()) {
+						inGame = false;
+					}
+				}
+
 			}
 		}
 		System.out.println(coveredCells);
@@ -354,7 +360,14 @@ public class GameLogics {
 	 * @return TilesEnum obj represents string of color chars to draw
 	 */
 	private TilesEnum decideImageType(Cell cell) {
-		TilesEnum imageType;
+		TilesEnum imageType = null;
+
+		if (cell.isMine()) {
+			imageType = TilesEnum.BLOW_IMG;
+		}else if (cell.isMarked()){
+			imageType = TilesEnum.MARK_IMG;
+		}else {
+
 
 		switch (cell.getValue()){
 			case 0:
@@ -377,15 +390,24 @@ public class GameLogics {
 				break;
 			case 6:
 				imageType = TilesEnum.six;
+				break;
 			case 7:
 				imageType = TilesEnum.seven;
 				break;
 			case 8:
 				imageType = TilesEnum.eight;
 				break;
-			default:
-				imageType = TilesEnum.COVER_IMG;
+//			case 9:
+//				imageType = TilesEnum.explode;
+//				break;
+//			default:
+//				imageType = TilesEnum.MARK_IMG;
+			}
 		}
+
+//		if(cell.isMarked()){
+//			imageType = TilesEnum.MARK_IMG;
+//		}
 
 		if (!inGame) {
 			if (cell.isCovered() && cell.isMine()) {

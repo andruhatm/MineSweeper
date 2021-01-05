@@ -1,4 +1,4 @@
-package src;
+package src.entity;
 
 /**
  * Entity class of Cell on the Board

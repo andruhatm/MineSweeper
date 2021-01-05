@@ -5,14 +5,14 @@ import java.awt.event.MouseEvent;
 /**
  * Thread for checking new mouse click events
  */
-public class MouseEventsThread extends Thread{
+public class BoardMouseEventThread extends Thread{
 
 	GameView view;
-	GameLogics logics;
+	BoardLogic logics;
 	MouseEvent lastEvent = null;
 	MouseEvent currentEvent = null;
 
-	MouseEventsThread(String name,GameView view,GameLogics logics){
+	BoardMouseEventThread(String name, GameView view, BoardLogic logics){
 		super(name);
 		this.view = view;
 		this.logics = logics;
