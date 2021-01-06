@@ -1,17 +1,36 @@
 package src.entity;
 
+import java.util.Objects;
+
 /**
  * Entity class of Cell on the Board
  */
 public class Cell {
-
+    /**
+     * if cell is mine or not
+     */
     private boolean mine;
+    /**
+     * if cell is marked or not
+     */
     private boolean mark;
+    /**
+     * if cell is covered or not
+     */
     private boolean cover;
+    /**
+     * if cell is checked or not
+     */
     private boolean checked;
-
+    /**
+     * number of mines around
+     */
     private int value;
 
+    /**
+     * Cell constructor
+     * initializes cell with default values
+     */
     public Cell() {
         this.cover = true;
         this.mine = false;
@@ -75,6 +94,10 @@ public class Cell {
         return this.value;
     }
 
+    /**
+     * Cell toString mthd
+     * @return cell fields values as String
+     */
     @Override
     public String toString() {
         return "Cell{" +
@@ -84,5 +107,31 @@ public class Cell {
                 ", checked=" + checked +
                 ", value=" + value +
                 '}';
+    }
+
+    /**
+     * mthd to compare object with other object
+     * @param o object to compare with
+     * @return bool compare result
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Cell cell = (Cell) o;
+        return mine == cell.mine &&
+                mark == cell.mark &&
+                cover == cell.cover &&
+                checked == cell.checked &&
+                value == cell.value;
+    }
+
+    /**
+     * hash mthd
+     * @return hash code in int
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(mine, mark, cover, checked, value);
     }
 }

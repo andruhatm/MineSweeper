@@ -1,41 +1,76 @@
-package src;
+package src.board;
 
+import src.view.GameView;
 import src.common.TilesEnum;
 import src.entity.Cell;
+import src.menu.GameMenu;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Draw logic class for Board
+ */
 public class BoardLogic {
-
+	/**
+	 * view field to work with JFrame mthds
+	 */
 	private final GameView view;
-
-	private GameMenu menu;
-
-	//cell pixel size
-	private static final int CELL_SIZE = 32;
-
-	private static int absoluteX;
-	private static int absoluteY;
-
+	/**
+	 * constant of cell pixel size
+	 */
+	private final int CELL_SIZE = 32;
+	/**
+	 * constant of X as starting draw coordinate
+	 */
+	private final int ABSOLUTE_X;
+	/**
+	 * constant of Y as starting draw coordinate
+	 */
+	private final int ABSOLUTE_Y;
+	/**
+	 * count of mines to show in statusbar
+	 */
 	private int remainderMines;
-
-	private final int rows = 16;
-	private final int columns = 16;
-	private final int minesCount;
-
-	private static Cell[][] cells;
+	/**
+	 * constant count of rows
+	 */
+	private final int ROWS = 16;
+	/**
+	 * constant count of columns
+	 */
+	private final int COLUMNS = 16;
+	/**
+	 * constant count of mines on board
+	 */
+	private final int MINES_COUNT;
+	/**
+	 * array of cells which represents the board
+	 */
+	private Cell[][] cells;
+	/**
+	 * count of uncovered cells of board
+	 */
 	private int uncoveredCells = 0;
-
+	/**
+	 * bool value to determine if player is in game or not
+	 */
 	private boolean inGame;
 
+	/**
+	 * BoardLogic constructor
+	 * @param absoluteX starting X coordinate to draw
+	 * @param absoluteY starting Y coordinate to draw
+	 * @param view GameView obj to work with JFrame
+	 * @param minesCount count of mines
+	 */
 	public BoardLogic(int absoluteX, int absoluteY, GameView view, int minesCount) {
 		this.view = view;
-		BoardLogic.absoluteX = absoluteX;
-		BoardLogic.absoluteY = absoluteY;
-		this.minesCount = minesCount;
+		this.ABSOLUTE_X = absoluteX;
+		this.ABSOLUTE_Y = absoluteY;
+		this.MINES_COUNT = minesCount;
 		initCells();
 	}
 
@@ -44,17 +79,14 @@ public class BoardLogic {
 	 */
 	public void newGame() {
 		Random random = new Random();
-
 		this.inGame = true;
-		int totalMines = minesCount;
+		int totalMines = MINES_COUNT;
 		this.remainderMines = totalMines+1;
-
 		view.setStatusText("Mines lasts: " + remainderMines);
-
 		int remainder = totalMines;
 		while (remainder >= 0) {
-			int randX = random.nextInt(this.rows);
-			int randY = random.nextInt(this.columns);
+			int randX = random.nextInt(this.ROWS);
+			int randY = random.nextInt(this.COLUMNS);
 
 			Cell cell = cells[randX][randY];
 			if (!cell.isMine()) {
@@ -70,35 +102,24 @@ public class BoardLogic {
 	 * @param e last mouse click event from {@link BoardMouseEventThread}
 	 */
 	public void blockPressed(MouseEvent e){
-
-		int pressedCol = (e.getX() - absoluteX) / CELL_SIZE;
-		int pressedRow = (e.getY() - absoluteY) / CELL_SIZE;
-		System.out.println("pressed column "+pressedCol+" pressed row "+pressedRow);
-
+		int pressedCol = (e.getX() - ABSOLUTE_X) / CELL_SIZE;
+		int pressedRow = (e.getY() - ABSOLUTE_Y) / CELL_SIZE;
 		Cell pressedCell;
-
 		if (!inGame) {
 			newGame();
 			drawBoard();
 		}
-
 		if ((pressedCol < 0
-				|| pressedCol >= columns)
-				|| (pressedRow < 0 || pressedRow >= rows)
+				|| pressedCol >= COLUMNS)
+				|| (pressedRow < 0 || pressedRow >= ROWS)
 		){
 			return;
 		}
-
 		pressedCell = cells[pressedRow][pressedCol];
-
-		System.out.println(pressedCell.toString());
-
 		if (e.getButton() == MouseEvent.BUTTON3) {
-
 			if (!pressedCell.isCovered()) {
 				return;
 			}
-
 			if (!pressedCell.isMarked()) {
 				pressedCell.setMark(true);
 				System.out.println(pressedCell.toString());
@@ -109,18 +130,14 @@ public class BoardLogic {
 				this.uncoveredCells++;
 				this.remainderMines++;
 			}
-
 			view.setStatusText(Integer.toString(remainderMines));
 			view.playSound("flag.wav",false);
 
 		} else {
-
 			if (pressedCell.isMarked() || !pressedCell.isCovered()) {
 				return;
 			}
-
 			pressedCell.uncover();
-
 			if (pressedCell.isMine()) {
 				view.playSound("boom.wav",false);
 				inGame = false;
@@ -145,8 +162,8 @@ public class BoardLogic {
 		//adding border for game board with tiles
 		view.addRectangleToCanvas(200,20,517,517,5,false,Color.white);
 
-		for(int i=0;i<rows;i++){
-			for(int j=0;j<columns;j++){
+		for(int i=0;i<ROWS;i++){
+			for(int j=0;j<COLUMNS;j++){
 				Cell tile = cells[i][j];
 
 				TilesEnum imageType;
@@ -161,7 +178,7 @@ public class BoardLogic {
 				xPosition = (j * CELL_SIZE);
 				yPosition = (i * CELL_SIZE);
 
-				this.view.addImageToCanvas(imageType.getTitle(),xPosition+absoluteX,yPosition+absoluteY,1);
+				this.view.addImageToCanvas(imageType.getTitle(),xPosition+ABSOLUTE_X,yPosition+ABSOLUTE_Y,1);
 
 				if (inGame) {
 					if (tile.isMine() && !tile.isCovered()) {
@@ -172,6 +189,7 @@ public class BoardLogic {
 			}
 		}
 
+		GameMenu menu;
 		if (coveredCells == 0 && inGame) {
 			menu = new GameMenu(this.view);
 			GameBoard.thread.disable();
@@ -204,10 +222,9 @@ public class BoardLogic {
 	 * initializes array of cells
 	 */
 	public void initCells() {
-		cells = new Cell[rows][columns];
-
-		for (int i = 0; i < this.rows; ++i) {
-			for (int j = 0; j < this.columns; ++j) {
+		cells = new Cell[ROWS][COLUMNS];
+		for (int i = 0; i < this.ROWS; ++i) {
+			for (int j = 0; j < this.COLUMNS; ++j) {
 				cells[i][j] = new Cell();
 			}
 		}
@@ -217,10 +234,9 @@ public class BoardLogic {
 	 * sets mines count of nearby mines in Cells array
 	 */
 	public void setMinesCount() {
-		for (int i = 0; i < this.columns; ++i) {
-			for (int j = 0; j < this.rows; ++j) {
+		for (int i = 0; i < this.COLUMNS; ++i) {
+			for (int j = 0; j < this.ROWS; ++j) {
 				Cell cell = cells[i][j];
-
 				if (!cell.isMine()) {
 					int count = countMinesAround(i, j);
 					cell.setAroundMines(count);
@@ -237,29 +253,24 @@ public class BoardLogic {
 	 */
 	private int countMinesAround(int x, int y) {
 		int count = 0;
-
 		for (int i = -1; i <= 1; ++i) {
 			int xIndex = x + i;
-			if (xIndex < 0 || xIndex >= this.rows) {
+			if (xIndex < 0 || xIndex >= this.ROWS) {
 				continue;
 			}
-
 			for (int j = -1; j <= 1; ++j) {
 				int yIndex = y + j;
-				if (yIndex < 0 || yIndex >= this.columns) {
+				if (yIndex < 0 || yIndex >= this.COLUMNS) {
 					continue;
 				}
-
 				if (i == 0 && j == 0) {
 					continue;
 				}
-
 				if (cells[xIndex][yIndex].isMine()) {
 					count++;
 				}
 			}
 		}
-
 		return count;
 	}
 
@@ -283,15 +294,13 @@ public class BoardLogic {
 	private void uncoverAroundCell(int x, int y) {
 		for (int i = -1; i <= 1; ++i) {
 			int xIndex = x + i;
-
-			if (xIndex < 0 || xIndex >= this.rows) {
+			if (xIndex < 0 || xIndex >= this.ROWS) {
 				continue;
 			}
-
 			for (int j = -1; j <= 1; ++j) {
 				int yIndex = y + j;
 
-				if (yIndex < 0 || yIndex >= this.columns) {
+				if (yIndex < 0 || yIndex >= this.COLUMNS) {
 					continue;
 				}
 
@@ -311,8 +320,8 @@ public class BoardLogic {
 	 * clears all board when game ends
 	 */
 	private void clearAllCells() {
-		for (int i = 0; i < this.rows; ++i) {
-			for (int j = 0; j < this.columns; ++j) {
+		for (int i = 0; i < this.ROWS; ++i) {
+			for (int j = 0; j < this.COLUMNS; ++j) {
 				cells[i][j].clearChecked();
 			}
 		}
@@ -325,25 +334,20 @@ public class BoardLogic {
 	 * @param depth depth of searching
 	 */
 	public void findEmptyCells(int x, int y, int depth) {
-
 		for (int i = -1; i <= 1; ++i) {
 			int xIndex = x + i;
-
-			if (xIndex < 0 || xIndex >= this.rows) {
+			if (xIndex < 0 || xIndex >= this.ROWS) {
 				continue;
 			}
-
 			for (int j = -1; j <= 1; ++j) {
 				int yIndex = y + j;
 
-				if (yIndex < 0 || yIndex >= this.columns) {
+				if (yIndex < 0 || yIndex >= this.COLUMNS) {
 					continue;
 				}
-
 				if (!(i == 0 || j == 0)) {
 					continue;
 				}
-
 				Cell cell = cells[xIndex][yIndex];
 				if (checkEmpty(cell)) {
 					cell.uncover();
@@ -354,7 +358,6 @@ public class BoardLogic {
 				}
 			}
 		}
-
 		if (depth == 0) {
 			this.clearAllCells();
 		}
@@ -367,54 +370,24 @@ public class BoardLogic {
 	 */
 	private TilesEnum decideImageType(Cell cell) {
 		TilesEnum imageType = null;
-
 		if (cell.isMine()) {
 			imageType = TilesEnum.BLOW_IMG;
 		}else if (cell.isMarked()){
 			imageType = TilesEnum.MARK_IMG;
 		}else {
-
-
-		switch (cell.getValue()){
-			case 0:
-				imageType = TilesEnum.NULL;
-				break;
-			case 1:
-				imageType = TilesEnum.one;
-				break;
-			case 2:
-				imageType = TilesEnum.two;
-				break;
-			case 3:
-				imageType = TilesEnum.three;
-				break;
-			case 4:
-				imageType = TilesEnum.four;
-				break;
-			case 5:
-				imageType = TilesEnum.five;
-				break;
-			case 6:
-				imageType = TilesEnum.six;
-				break;
-			case 7:
-				imageType = TilesEnum.seven;
-				break;
-			case 8:
-				imageType = TilesEnum.eight;
-				break;
-//			case 9:
-//				imageType = TilesEnum.explode;
-//				break;
-//			default:
-//				imageType = TilesEnum.MARK_IMG;
-			}
+			imageType = switch (cell.getValue()) {
+				case 0 -> TilesEnum.NULL;
+				case 1 -> TilesEnum.one;
+				case 2 -> TilesEnum.two;
+				case 3 -> TilesEnum.three;
+				case 4 -> TilesEnum.four;
+				case 5 -> TilesEnum.five;
+				case 6 -> TilesEnum.six;
+				case 7 -> TilesEnum.seven;
+				case 8 -> TilesEnum.eight;
+				default -> imageType;
+			};
 		}
-
-//		if(cell.isMarked()){
-//			imageType = TilesEnum.MARK_IMG;
-//		}
-
 		if (!inGame) {
 			if (cell.isCovered() && cell.isMine()) {
 				cell.uncover();

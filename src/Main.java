@@ -1,25 +1,28 @@
 package src;
 
+import src.menu.GameMenu;
+import src.view.GameView;
+
 import java.awt.*;
 import java.util.HashMap;
 
+/**
+ * Main class of application
+ * @version 1.0
+ */
 public final class Main {
 
 	/**
-	 * game view obj
+	 * entrypoint of the application
+	 * @param args additional params
 	 */
-	static GameView view;
-
 	public static void main(String[] args) {
 
 		//initializing view provider object
-		view = new GameView(GameView.WINDOWSIZE_SMALL);
+		GameView view = new GameView(GameView.WINDOWSIZE_SMALL);
 
-		//initializing Board object
-		//GameBoard board = new GameBoard(view);
+		//initializing Menu object
 		GameMenu menu = new GameMenu(view);
-
-		view.useMouse(true);
 
 		//adding colors to ColorMap
 		HashMap<Character, Color>map = view.getColormap();
@@ -30,15 +33,11 @@ public final class Main {
 			map.put('D',new Color(0, 17, 161));
 			map.put('I',new Color(170, 0, 0));
 		view.setColormap(map);
-
 		view.setWindowIcon("mineIcon.jpg");
 		view.setWindowTitle("MineSweeper");
 
 		// menu
 		menu.openMenu();
-
-		//TODO кнопка rectangle(addRectangleToCanvas) play (addTextToCanvas)
-
 		view.printCanvas();
 	}
 
