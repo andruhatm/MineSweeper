@@ -1,5 +1,6 @@
-package src.menu;
+package src.threads;
 
+import src.logic.MenuLogic;
 import src.view.GameView;
 
 import java.awt.event.KeyEvent;
@@ -8,7 +9,7 @@ import java.awt.event.MouseEvent;
 /**
  * Thread for checking new mouse events from menu
  */
-public class MenuMouseEventThread extends Thread{
+public class MenuEventThread extends Thread{
 
 	/**
 	 * GameView obj to work with JFrame
@@ -32,12 +33,22 @@ public class MenuMouseEventThread extends Thread{
 	private boolean active = true;
 
 	/**
+	 * last key event to compare with
+	 */
+	private KeyEvent lastKeyEvent;
+
+	/**
+	 * potential new key event to compare with last event
+	 */
+	private KeyEvent currentKeyEvent;
+
+	/**
 	 * thread constructor
 	 * @param name name of the thread
 	 * @param view GameView obj to work with JFrame mthds
 	 * @param logics logic obj to send new events
 	 */
-	MenuMouseEventThread(String name, GameView view, MenuLogic logics){
+	public MenuEventThread(String name, GameView view, MenuLogic logics){
 		super(name);
 		this.view = view;
 		this.logics = logics;
@@ -54,17 +65,19 @@ public class MenuMouseEventThread extends Thread{
 					lastEvent = event;
 				}
 			}
-//			for(KeyEvent event: view.pollKeyEvents()){
-//				if(event.getID() == KeyEvent.VK_ENTER){
-//					System.out.println("key event");
-//					this.logics.menuPressed();
-//				}
-//			}
+			for(KeyEvent event: view.pollKeyEvents()){
+					lastKeyEvent = event;
+			}
+			if (lastKeyEvent != null)
+				if(!lastKeyEvent.equals(currentKeyEvent))
+					this.logics.click(lastKeyEvent);
+
 			if(lastEvent != null)
 				if(!lastEvent.equals(currentEvent)){
-					this.logics.menuClick(lastEvent);
+					this.logics.click(lastEvent);
 				}
 			currentEvent = lastEvent;
+			currentKeyEvent = lastKeyEvent;
 			try {
 				Thread.sleep(50);
 			}

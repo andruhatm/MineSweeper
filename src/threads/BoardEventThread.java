@@ -1,5 +1,6 @@
-package src.board;
+package src.threads;
 
+import src.logic.BoardLogic;
 import src.view.GameView;
 
 import java.awt.event.MouseEvent;
@@ -7,8 +8,7 @@ import java.awt.event.MouseEvent;
 /**
  * Thread for checking new mouse events on board
  */
-public class BoardMouseEventThread extends Thread{
-
+public class BoardEventThread extends Thread{
 	/**
 	 * GameView obj to work with JFrame
 	 */
@@ -36,7 +36,7 @@ public class BoardMouseEventThread extends Thread{
 	 * @param view GameView obj to work with JFrame mthds
 	 * @param logics logic obj to send new events
 	 */
-	BoardMouseEventThread(String name, GameView view, BoardLogic logics){
+	public BoardEventThread(String name, GameView view, BoardLogic logics){
 		super(name);
 		this.view = view;
 		this.logics = logics;
@@ -55,11 +55,11 @@ public class BoardMouseEventThread extends Thread{
 			}
 			if(lastEvent != null)
 				if(!lastEvent.equals(currentEvent)){
-					this.logics.blockPressed(lastEvent);
+					this.logics.click(lastEvent);
 				}
 			currentEvent = lastEvent;
 			try {
-				Thread.sleep(50);
+				Thread.sleep(20);
 			}
 			catch (InterruptedException e) {
 				e.printStackTrace();

@@ -1,11 +1,14 @@
-package src.board;
+package src.logic;
 
+import src.threads.BoardEventThread;
+import src.entity.GameBoard;
 import src.view.GameView;
 import src.common.TilesEnum;
 import src.entity.Cell;
-import src.menu.GameMenu;
+import src.entity.GameMenu;
 
 import java.awt.*;
+import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -13,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Draw logic class for Board
  */
-public class BoardLogic {
+public class BoardLogic implements ScreenLogic {
 	/**
 	 * view field to work with JFrame mthds
 	 */
@@ -81,10 +84,10 @@ public class BoardLogic {
 		Random random = new Random();
 		this.inGame = true;
 		int totalMines = MINES_COUNT;
-		this.remainderMines = totalMines+1;
+		this.remainderMines = totalMines;
 		view.setStatusText("Mines lasts: " + remainderMines);
 		int remainder = totalMines;
-		while (remainder >= 0) {
+		while (remainder > 0) {
 			int randX = random.nextInt(this.ROWS);
 			int randY = random.nextInt(this.COLUMNS);
 
@@ -99,30 +102,24 @@ public class BoardLogic {
 
 	/**
 	 * calculate's pressed cell and changes cells state, then call to repaint
-	 * @param e last mouse click event from {@link BoardMouseEventThread}
+	 * @param event last mouse click event from {@link BoardEventThread}
 	 */
-	public void blockPressed(MouseEvent e){
-		int pressedCol = (e.getX() - ABSOLUTE_X) / CELL_SIZE;
-		int pressedRow = (e.getY() - ABSOLUTE_Y) / CELL_SIZE;
-		Cell pressedCell;
-		if (!inGame) {
-			newGame();
-			drawBoard();
-		}
-		if ((pressedCol < 0
-				|| pressedCol >= COLUMNS)
-				|| (pressedRow < 0 || pressedRow >= ROWS)
-		){
+	public void click(InputEvent event){
+		MouseEvent e = (MouseEvent) event;
+		Cell pressedCell = findPressedCell(e);
+		if (pressedCell == null){
 			return;
 		}
-		pressedCell = cells[pressedRow][pressedCol];
+		if (!inGame) {
+			newGame();
+			draw();
+		}
 		if (e.getButton() == MouseEvent.BUTTON3) {
 			if (!pressedCell.isCovered()) {
 				return;
 			}
 			if (!pressedCell.isMarked()) {
 				pressedCell.setMark(true);
-				System.out.println(pressedCell.toString());
 				this.uncoveredCells--;
 				this.remainderMines--;
 			} else {
@@ -132,7 +129,6 @@ public class BoardLogic {
 			}
 			view.setStatusText(Integer.toString(remainderMines));
 			view.playSound("flag.wav",false);
-
 		} else {
 			if (pressedCell.isMarked() || !pressedCell.isCovered()) {
 				return;
@@ -142,69 +138,86 @@ public class BoardLogic {
 				view.playSound("boom.wav",false);
 				inGame = false;
 			} else if (pressedCell.isEmpty()) {
-				findEmptyCells(pressedRow, pressedCol, 32);
-				//TODO bugfix not open tiles
+				findEmptyCells((e.getY() - ABSOLUTE_Y) / CELL_SIZE, (e.getX() - ABSOLUTE_X) / CELL_SIZE, 32);
 			}
 			if(!pressedCell.isMine())
 				view.playSound("shovel.wav",false);
 		}
-		drawBoard();
+	}
+
+	/**
+	 * find cell by click event
+	 * @param e click event
+	 * @return {@link Cell obj} if board pressed, else null
+	 */
+	public Cell findPressedCell(MouseEvent e){
+		int pressedCol = (e.getX() - ABSOLUTE_X) / CELL_SIZE;
+		int pressedRow = (e.getY() - ABSOLUTE_Y) / CELL_SIZE;
+		if ((pressedCol < 0
+						|| pressedCol >= COLUMNS)
+						|| (pressedRow < 0 || pressedRow >= ROWS)
+		){
+			return null;
+		} else {
+			return cells[pressedRow][pressedCol];
+		}
 	}
 
 	/**
 	 * mthd for drawing/redrawing board by cells[][] array
 	 * if all cells detected or user pressed bomb, sets new window status text
 	 */
-	public void drawBoard(){
-
-		int coveredCells = uncoveredCells;
-
-		//adding border for game board with tiles
-		view.addRectangleToCanvas(200,20,517,517,5,false,Color.white);
-
-		for(int i=0;i<ROWS;i++){
-			for(int j=0;j<COLUMNS;j++){
-				Cell tile = cells[i][j];
-
-				TilesEnum imageType;
-				int xPosition, yPosition;
-
-				if (tile.isCovered()) {
-					coveredCells++;
-				}
-
-				imageType = this.decideImageType(tile);
-
-				xPosition = (j * CELL_SIZE);
-				yPosition = (i * CELL_SIZE);
-
-				this.view.addImageToCanvas(imageType.getTitle(),xPosition+ABSOLUTE_X,yPosition+ABSOLUTE_Y,1);
-
-				if (inGame) {
-					if (tile.isMine() && !tile.isCovered()) {
-						inGame = false;
+	public void draw(){
+			view.addTextToCanvas("Mines: " + remainderMines, ABSOLUTE_X + 530, ABSOLUTE_Y + 80, 22, Color.white);
+			int coveredCells = uncoveredCells;
+			//adding border for game board with tiles
+			view.addRectangleToCanvas(200, 20, 517, 517, 5, false, Color.white);
+			for (int i = 0; i < ROWS; i++) {
+				for (int j = 0; j < COLUMNS; j++) {
+					Cell tile = cells[i][j];
+					TilesEnum imageType;
+					int xPosition, yPosition;
+					if (tile.isCovered()) {
+						coveredCells++;
+					}
+					imageType = this.decideImageType(tile);
+					xPosition = (j * CELL_SIZE);
+					yPosition = (i * CELL_SIZE);
+					this.view.addImageToCanvas(imageType.getTitle(), xPosition + ABSOLUTE_X, yPosition + ABSOLUTE_Y, 1);
+					if (inGame) {
+						if (tile.isMine() && !tile.isCovered()) {
+							inGame = false;
+						}
 					}
 				}
-
 			}
-		}
+			checkEndGame(coveredCells);
+			view.printCanvas();
+	}
 
+	/**
+	 * checks if game ends or not, win or loss
+	 */
+	public void checkEndGame(int coveredCells){
 		GameMenu menu;
-		if (coveredCells == 0 && inGame) {
+		if (coveredCells == 0 && inGame && remainderMines == 0) {
 			menu = new GameMenu(this.view);
-			GameBoard.thread.disable();
+			GameBoard.getThread().disable();
+			GameBoard.getTimer().setExit(true);
 			inGame = false;
 			view.setStatusText("Game Won. Window will close in 5 seconds");
 			view.playSound("win.wav",false);
+			view.printCanvas();
 			try {
 				TimeUnit.SECONDS.sleep(5);
 			}catch (InterruptedException e){
 				e.getCause();
 			}
-			menu.openMenu();
+			menu.init();
 		} else if (!inGame) {
 			menu = new GameMenu(this.view);
-			GameBoard.thread.disable();
+			GameBoard.getThread().disable();
+			GameBoard.getTimer().setExit(true);
 			view.playSound("lose.wav",false);
 			view.setStatusText("Game Lost. Window will close in 5 seconds");
 			view.printCanvas();
@@ -213,9 +226,8 @@ public class BoardLogic {
 			}catch (InterruptedException e){
 				e.getCause();
 			}
-			menu.openMenu();
+			menu.init();
 		}
-		view.printCanvas();
 	}
 
 	/**
@@ -406,7 +418,6 @@ public class BoardLogic {
 				imageType = TilesEnum.COVER_IMG;
 			}
 		}
-
 		return imageType;
 	}
 

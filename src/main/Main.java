@@ -1,6 +1,6 @@
-package src;
+package src.main;
 
-import src.menu.GameMenu;
+import src.entity.GameMenu;
 import src.view.GameView;
 
 import java.awt.*;
@@ -13,7 +13,7 @@ import java.util.HashMap;
 public final class Main {
 
 	/**
-	 * entrypoint of the application
+	 * entrypoint of the applications
 	 * @param args additional params
 	 */
 	public static void main(String[] args) {
@@ -36,8 +36,8 @@ public final class Main {
 		view.setWindowIcon("mineIcon.jpg");
 		view.setWindowTitle("MineSweeper");
 
-		// menu
-		menu.openMenu();
+		//starting menu
+		menu.init();
 		view.printCanvas();
 	}
 

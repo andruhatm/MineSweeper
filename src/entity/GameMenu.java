@@ -1,21 +1,23 @@
-package src.menu;
+package src.entity;
 
+import src.logic.MenuLogic;
+import src.threads.MenuEventThread;
 import src.view.GameView;
 
 /**
  * Service class for Menu
  * Works with Menu draw logics and MouseEvents thread
  */
-public class GameMenu {
+public class GameMenu implements InitComponent{
 
 	/**
 	 * menu logic obj
 	 */
-	static MenuLogic logic;
+	private final MenuLogic logic;
 	/**
 	 * menu mouse events thread
 	 */
-	static MenuMouseEventThread thread;
+	private static MenuEventThread thread;
 
 	/**
 	 * initializes logic class and mouse events thread
@@ -26,15 +28,22 @@ public class GameMenu {
 		//initializing logic class with absolute coordinates for menu
 		logic = new MenuLogic(380,250,view);
 		//initializing thread to listen mouse clicks
-		thread = new MenuMouseEventThread("menuListener",view,logic);
+		thread = new MenuEventThread("menuListener",view,logic);
 	}
 
 	/**
-	 * starts thread and menu draw logics
+	 * starts thread and draw menu
 	 */
-	public void openMenu(){
-		logic.drawMenu();
+	public void init(){
+		logic.draw();
 		thread.start();
 	}
 
+	/**
+	 * getter for menu event thread
+	 * @return {@link MenuEventThread static obj}
+	 */
+	public static MenuEventThread getThread() {
+		return thread;
+	}
 }

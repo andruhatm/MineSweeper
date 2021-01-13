@@ -111,7 +111,7 @@ public enum TilesEnum {
 					"LvvvvvvvvvvvvDDvvDDvvvvvvvvvvvvL\n" +
 					"LvvvvvvvvvvvDDvvvDDvvvvvvvvvvvvL\n" +
 					"LvvvvvvvvvvDDvvvvDDvvvvvvvvvvvvL\n" +
-					"LvvvvvvvvvDDvvvvvDDvvvvvvvvvvvvL\n" +//
+					"LvvvvvvvvvDDvvvvvDDvvvvvvvvvvvvL\n" +
 					"LvvvvvvvvvDDvvvvvDDvvvvvvvvvvvvL\n" +
 					"LvvvvvvvvDDvvvvvvDDvvvvvvvvvvvvL\n" +
 					"LvvvvvvvDDvvvvvvvDDvvvvvvvvvvvvL\n" +
@@ -143,7 +143,7 @@ public enum TilesEnum {
 					"LvvvvvvvvvIIvvvvvvvvvvvvvvvvvvvL\n" +
 					"LvvvvvvvvvIIvvvvvvvvvvvvvvvvvvvL\n" +
 					"LvvvvvvvvvIIvvvvvvvvvvvvvvvvvvvL\n" +
-					"LvvvvvvvvvIIvvvvvvvvvvvvvvvvvvvL\n" +//
+					"LvvvvvvvvvIIvvvvvvvvvvvvvvvvvvvL\n" +
 					"LvvvvvvvvvIIIvvvvvvvvvvvvvvvvvvL\n" +
 					"LvvvvvvvvvvvIIIIIIIvvvvvvvvvvvvL\n" +
 					"LvvvvvvvvvvvvvvvvvvIIvvvvvvvvvvL\n" +
@@ -175,7 +175,7 @@ public enum TilesEnum {
 					"LvvvvvvvvvvKKKvvvvvvvvvvvvvvvvvL\n" +
 					"LvvvvvvvvvKKKvvvvvvvvvvvvvvvvvvL\n" +
 					"LvvvvvvvvKKKvvvvvvvvvvvvvvvvvvvL\n" +
-					"LvvvvvvvvKKvvvvvvvvvvvvvvvvvvvvL\n" +//
+					"LvvvvvvvvKKvvvvvvvvvvvvvvvvvvvvL\n" +
 					"LvvvvvvvvKKvvvvvvvvvvvvvvvvvvvvL\n" +
 					"LvvvvvvvKKKvvvvvvvvvvvvvvvvvvvvL\n" +
 					"LvvvvvvvKKvvvvvvvvvvvvvvvvvvvvvL\n" +
@@ -207,7 +207,7 @@ public enum TilesEnum {
 					"LvvvvvvvvvvvvvvvvvvvvvMvvvvvvvvL\n" +
 					"LvvvvvvvvvvvvvvvvvvvvMvvvvvvvvvL\n" +
 					"LvvvvvvvvvvvvvvvvvvvMvvvvvvvvvvL\n" +
-					"LvvvvvvvvvvvvvvvvvvvMvvvvvvvvvvL\n" +//
+					"LvvvvvvvvvvvvvvvvvvvMvvvvvvvvvvL\n" +
 					"LvvvvvvvvvvvvvvvvvvMvvvvvvvvvvvL\n" +
 					"LvvvvvvvvvvvvvvvvvvMvvvvvvvvvvvL\n" +
 					"LvvvvvvvvvvvvvvvvvMvvvvvvvvvvvvL\n" +
@@ -239,7 +239,7 @@ public enum TilesEnum {
 					"LvvvvvvvvvPvvvvvvvvPvvvvvvvvvvvL\n" +
 					"LvvvvvvvvvPvvvvvvvVPvvvvvvvvvvvL\n" +
 					"LvvvvvvvvvPvvvvvvvVPvvvvvvvvvvvL\n" +
-					"LvvvvvvvvvPPvvvvvvPPvvvvvvvvvvvL\n" +//
+					"LvvvvvvvvvPPvvvvvvPPvvvvvvvvvvvL\n" +
 					"LvvvvvvvvvvPvvvvvvPvvvvvvvvvvvvL\n" +
 					"LvvvvvvvvvvPPvvvvPPvvvvvvvvvvvvL\n" +
 					"LvvvvvvvvvvvPPvvPPvvvvvvvvvvvvvL\n" +
@@ -364,8 +364,8 @@ public enum TilesEnum {
 					"LWWWWWWWWWWWWWWWWWWWWWWWWWWLWWWL\n" +
 					"LWWWWWWWWWWWWWWWWWWWWWWWWWLWWWWL\n" +
 					"LWWWWWLLLLLLLLLLLLWWWWWWWLWWWWWL\n" +
-					"LWWWWWWLRRRRRRRRWLWWWWWWLWWWWWWL\n" +
-					"LWWWWWWWLRRRRRRRWLWWWWWLWWWWWWWL\n" +
+					"LWWWWWWLRRRRRRRRRLWWWWWWLWWWWWWL\n" +
+					"LWWWWWWWLRRRRRRRRLWWWWWLWWWWWWWL\n" +
 					"LWWWWWWWWLRRRRRRRLWWWWLWWWWWWWWL\n" +
 					"LWWWWWWWWWLRRRRRRLWWWLWWWWWWWWWL\n" +
 					"LWWWWWWWWLRRRRRRRLWWLWWWWWWWWWWL\n" +
@@ -458,21 +458,32 @@ public enum TilesEnum {
 					"LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL\n")
 
 	;
+	/**
+	 * title field containing chars to draw
+	 */
 	private final String title;
 
-
+	/**
+	 * TilesEnum contructor
+	 * @param s enum value
+	 */
 	TilesEnum(String s) {
 		title = s;
 	}
 
+	/**
+	 * getter for enum value
+	 * @return string of chars to draw
+	 */
 	public String getTitle() {
 		return title;
 	}
 
 	@Override
 	public String toString() {
-		return "TilesEnum{" +
-						"title='" + title + '\'' +
-						'}';
+		final StringBuilder sb = new StringBuilder("TilesEnum{");
+			sb.append("title='").append(title);
+			sb.append('}');
+			return sb.toString();
 	}
 }

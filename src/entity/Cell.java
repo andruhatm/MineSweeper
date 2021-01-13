@@ -38,58 +38,111 @@ public class Cell {
         this.value = 0;
     }
 
+    /**
+     * getter for value field
+     * @return count of mines around
+     */
     public int getValue() {
         return this.value;
     }
 
+    /**
+     * uncover cell
+     */
     public void uncover() {
         this.cover = false;
     }
 
+    /**
+     * setter for mark field
+     * @param mark mark bool value to set
+     */
     public void setMark(boolean mark) {
         this.mark = mark;
     }
 
+    /**
+     * getter for value field
+     * @return if cell has mines around
+     */
     public boolean isEmpty() {
         return this.value == 0;
     }
 
+    /**
+     * checks if cell is mine
+     * @return bool value
+     */
     public boolean isMine() {
         return this.mine;
     }
 
+    /**
+     * setter for mine field
+     * @param b bool value to set
+     */
     public void setMine(boolean b) {
         this.mine = b;
     }
 
+    /**
+     * checks if cell is marked
+     * @return bool value
+     */
     public boolean isMarked() {
         return this.mark;
     }
 
+    /**
+     * checks if cell is covered
+     * @return bool value
+     */
     public boolean isCovered() {
         return this.cover;
     }
 
+    /**
+     * checks if cell is checked
+     * @return bool value
+     */
     public boolean isChecked() {
         return this.checked;
     }
 
+    /**
+     * checks if cell is covered mine
+     * @return bool value
+     */
     public boolean isCoveredMine() {
         return this.cover && this.mine;
     }
 
+    /**
+     * setter for checked field, set true
+     */
     public void checked() {
         this.checked = true;
     }
 
+    /**
+     * setter for checked filed, set false
+     */
     public void clearChecked() {
         this.checked = false;
     }
 
+    /**
+     * setter for value field
+     * @param count set mines around count
+     */
     public void setAroundMines(int count) {
         this.value = count;
     }
 
+    /**
+     * getter for value field
+     * @return count of mines
+     */
     public int getAroundMines() {
         return this.value;
     }
@@ -100,13 +153,14 @@ public class Cell {
      */
     @Override
     public String toString() {
-        return "Cell{" +
-                "mine=" + mine +
-                ", mark=" + mark +
-                ", cover=" + cover +
-                ", checked=" + checked +
-                ", value=" + value +
-                '}';
+        final StringBuilder sb = new StringBuilder("Cell{");
+         sb.append("mine=").append(mine);
+         sb.append(", mark=").append(mark);
+         sb.append(", cover=").append(cover);
+         sb.append(", checked=").append(checked);
+         sb.append(", value=").append(value);
+         sb.append('}');
+         return sb.toString();
     }
 
     /**
