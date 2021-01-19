@@ -108,7 +108,7 @@ public class Timer extends Thread {
 	 * setter for exit field
 	 * @param exit bool value to set
 	 */
-	private void setExit(boolean exit) {
+	public void setExit(boolean exit) {
 		this.exit = exit;
 	}
 
