@@ -92,7 +92,7 @@ public class Timer extends Thread {
 	 * getter for secounds
 	 * @return secounds counter in String
 	 */
-	public String getSecounds() {
+	private String getSecounds() {
 		return String.valueOf(secounds);
 	}
 
@@ -100,7 +100,7 @@ public class Timer extends Thread {
 	 * getter for minutes
 	 * @return minutes counter in String
 	 */
-	public String getMinutes() {
+	private String getMinutes() {
 		return String.valueOf(minutes);
 	}
 
@@ -108,7 +108,7 @@ public class Timer extends Thread {
 	 * setter for exit field
 	 * @param exit bool value to set
 	 */
-	public void setExit(boolean exit) {
+	private void setExit(boolean exit) {
 		this.exit = exit;
 	}
 

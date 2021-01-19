@@ -141,7 +141,7 @@ public class BoardLogic extends Coordinates implements ScreenLogic {
 	 * @param e click event
 	 * @return {@link Cell obj} if board pressed, else null
 	 */
-	public Cell findPressedCell(MouseEvent e){
+	private Cell findPressedCell(MouseEvent e){
 		int pressedCol = (e.getX() - ABSOLUTE_X) / CELL_SIZE;
 		int pressedRow = (e.getY() - ABSOLUTE_Y) / CELL_SIZE;
 		if ((pressedCol < 0
@@ -190,7 +190,7 @@ public class BoardLogic extends Coordinates implements ScreenLogic {
 	/**
 	 * checks if game ends or not, win or loss
 	 */
-	public void checkEndGame(int coveredCells){
+	private void checkEndGame(int coveredCells){
 		GameMenu menu;
 		if (coveredCells == 0 && inGame && remainderMines == 0) {
 			menu = new GameMenu(this.view);
@@ -225,7 +225,7 @@ public class BoardLogic extends Coordinates implements ScreenLogic {
 	/**
 	 * initializes array of cells
 	 */
-	public void initCells() {
+	private void initCells() {
 		cells = new Cell[ROWS][COLUMNS];
 		for (int i = 0; i < this.ROWS; ++i) {
 			for (int j = 0; j < this.COLUMNS; ++j) {
@@ -237,7 +237,7 @@ public class BoardLogic extends Coordinates implements ScreenLogic {
 	/**
 	 * sets mines count of nearby mines in Cells array
 	 */
-	public void setMinesCount() {
+	private void setMinesCount() {
 		for (int i = 0; i < this.COLUMNS; ++i) {
 			for (int j = 0; j < this.ROWS; ++j) {
 				Cell cell = cells[i][j];
@@ -337,7 +337,7 @@ public class BoardLogic extends Coordinates implements ScreenLogic {
 	 * @param y y coordinate of cell
 	 * @param depth depth of searching
 	 */
-	public void findEmptyCells(int x, int y, int depth) {
+	private void findEmptyCells(int x, int y, int depth) {
 		for (int i = -1; i <= 1; ++i) {
 			int xIndex = x + i;
 			if (xIndex < 0 || xIndex >= this.ROWS) {
