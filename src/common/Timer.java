@@ -71,18 +71,15 @@ public class Timer extends Thread {
 					millisecounds = 0;
 					++secounds;
 				}
-
 				if (secounds > 59) {
 					secounds = 0;
 					++minutes;
 				}
-
 				if (r_millis == 50){
 					view.addTextToCanvas(getTime(),ABSOLUTE_X + 530, ABSOLUTE_Y+50,22, Color.white);
 					logics.draw();
 					r_millis = 0;
 				}
-
 				++millisecounds;
 				++r_millis;
 			} catch (Exception exception) {

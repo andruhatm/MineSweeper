@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Draw logic class for Board
  */
-public class BoardLogic implements ScreenLogic {
+public class BoardLogic extends Coordinates implements ScreenLogic {
 	/**
 	 * view field to work with JFrame mthds
 	 */
@@ -25,14 +25,6 @@ public class BoardLogic implements ScreenLogic {
 	 * constant of cell pixel size
 	 */
 	private final int CELL_SIZE = 32;
-	/**
-	 * constant of X as starting draw coordinate
-	 */
-	private final int ABSOLUTE_X;
-	/**
-	 * constant of Y as starting draw coordinate
-	 */
-	private final int ABSOLUTE_Y;
 	/**
 	 * count of mines to show in statusbar
 	 */
@@ -70,9 +62,8 @@ public class BoardLogic implements ScreenLogic {
 	 * @param minesCount count of mines
 	 */
 	public BoardLogic(int absoluteX, int absoluteY, GameView view, int minesCount) {
+		super(absoluteX,absoluteY);
 		this.view = view;
-		this.ABSOLUTE_X = absoluteX;
-		this.ABSOLUTE_Y = absoluteY;
 		this.MINES_COUNT = minesCount;
 		initCells();
 	}
@@ -183,7 +174,8 @@ public class BoardLogic implements ScreenLogic {
 					imageType = this.decideImageType(tile);
 					xPosition = (j * CELL_SIZE);
 					yPosition = (i * CELL_SIZE);
-					this.view.addImageToCanvas(imageType.getTitle(), xPosition + ABSOLUTE_X, yPosition + ABSOLUTE_Y, 1);
+					if (imageType != null)
+						this.view.addImageToCanvas(imageType.getTitle(), xPosition + ABSOLUTE_X, yPosition + ABSOLUTE_Y, 1);
 					if (inGame) {
 						if (tile.isMine() && !tile.isCovered()) {
 							inGame = false;
@@ -420,5 +412,4 @@ public class BoardLogic implements ScreenLogic {
 		}
 		return imageType;
 	}
-
 }

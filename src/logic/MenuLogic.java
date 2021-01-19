@@ -14,20 +14,11 @@ import java.awt.event.MouseEvent;
 /**
  * Draw logic class for Menu
  */
-public class MenuLogic implements ScreenLogic {
+public class MenuLogic extends Coordinates implements ScreenLogic {
 	/**
 	 * view field to work with JFrame mthds
 	 */
 	private final GameView view;
-	/**
-	 * constant of X as starting draw coordinate
-	 */
-	private final int ABSOLUTE_X;
-	/**
-	 * constant of Y as starting draw coordinate
-	 */
-	private final int ABSOLUTE_Y;
-
 	/**
 	 * level of difficulty
 	 */
@@ -40,9 +31,8 @@ public class MenuLogic implements ScreenLogic {
 	 * @param view GameView obj to work with JFrame
 	 */
 	public MenuLogic(int absoluteX, int absoluteY, GameView view) {
+		super(absoluteX,absoluteY);
 		this.view = view;
-		this.ABSOLUTE_X = absoluteX;
-		this.ABSOLUTE_Y = absoluteY;
 	}
 	/**
 	 * opens game board onclick of play button
